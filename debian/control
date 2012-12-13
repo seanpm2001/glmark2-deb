@@ -1,0 +1,52 @@
+Source: glmark2
+Section: utils
+Priority: optional
+Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
+Build-Depends: debhelper (>= 9)
+              ,libgl1-mesa-dev
+              ,libgles2-mesa-dev
+              ,libjpeg8-dev
+              ,libpng-dev
+              ,pkg-config
+              ,python
+Standards-Version: 3.9.4
+Homepage: https://launchpad.net/glmark2
+Vcs-Git: git://anonscm.debian.org/pkg-multimedia/glmark2.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-multimedia/glmark2.git
+
+Package: glmark2
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, glmark2-data (= ${source:Version})
+Description: OpenGL 2.0 benchmark suite
+ glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+
+Package: glmark2-es
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, glmark2-data (= ${source:Version})
+Description: OpenGL ES 2.0 benchmark suite
+ glmark2 is a benchmark for OpenGL ES 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+
+Package: glmark2-data
+Architecture: all
+Depends: ${misc:Depends}
+Recommends: glmark2 (>= ${source:Version})
+Description: OpenGL (ES) 2.0 benchmark suite -- data files
+ glmark2 is a benchmark for OpenGL (ES) 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+ .
+ This package provides data files.
