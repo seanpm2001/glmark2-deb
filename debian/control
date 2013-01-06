@@ -1,7 +1,7 @@
 Source: glmark2
 Section: utils
 Priority: optional
-Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
 Build-Depends: debhelper (>= 9)
               ,libgl1-mesa-dev
@@ -12,8 +12,8 @@ Build-Depends: debhelper (>= 9)
               ,python
 Standards-Version: 3.9.4
 Homepage: https://launchpad.net/glmark2
-Vcs-Git: git://anonscm.debian.org/pkg-multimedia/glmark2.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-multimedia/glmark2.git
+VCS-Git: git://anonscm.debian.org/pkg-games/glmark2.git
+VCS-Browser: http://anonscm.debian.org/gitweb/?p=pkg-games/glmark2.git
 
 Package: glmark2
 Architecture: any
