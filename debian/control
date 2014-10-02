@@ -6,7 +6,7 @@ Uploaders: Dmitry Smirnov <onlyjob@member.fsf.org>
 Build-Depends: debhelper (>= 9)
               ,libgl1-mesa-dev
               ,libgles2-mesa-dev
-              ,libjpeg8-dev
+              ,libjpeg-dev
               ,libpng-dev
               ,pkg-config
               ,python
