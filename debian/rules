@@ -11,10 +11,10 @@ override_dh_clean:
 	$(RM) -r build
 
 override_dh_auto_configure:
-	./waf configure --enable-gl --enable-glesv2 --prefix=/usr
+	./waf configure -v --with-flavors=x11-gl,x11-glesv2 --prefix=/usr
 
 override_dh_auto_build:
-	./waf build
+	./waf build -v
 
 override_dh_install:
 	./waf --destdir=$(CURDIR)/debian/tmp install
@@ -22,27 +22,3 @@ override_dh_install:
 
 override_dh_installchangelogs:
 	dh_installchangelogs NEWS
-
-override_dh_builddeb:
-	dh_builddeb -- -Zxz
-
-## get-orig-source
-PKG := glmark2
-DPATH := $(abspath $(dir $(MAKEFILE_LIST)))
-VER ?= $(shell dpkg-parsechangelog -l$(DPATH)/changelog | perl -ne 'print $$1 if m{Version:\s*([\d\.]+)}')
-.PHONY: get-orig-source
-get-orig-source: $(PKG)_$(VER).orig.tar.xz
-	@
-
-$(PKG)_$(VER).orig.tar.xz:
-	@echo "# Downloading..."
-	uscan --noconf --verbose --rename --destdir=$(CURDIR) --check-dirname-level=0 --force-download --download-version $(VER) $(DPATH)
-	mkdir $(PKG)-$(VER) \
-	&& tar xf $(PKG)_$(VER).orig.tar.* --directory $(PKG)-$(VER) --strip-components 1 \
-	&& $(RM) $(PKG)_$(VER).orig.tar.*
-	#@echo "# Clean-up..."
-	#cd $(PKG)_$(VER) \
-	#&& $(RM) -rv libjpeg-turbo libpng
-	@echo "# Packing..."
-	tar cJf "$(PKG)_$(VER).orig.tar.xz" "$(PKG)-$(VER)" \
-	&& $(RM) -r "$(PKG)-$(VER)"

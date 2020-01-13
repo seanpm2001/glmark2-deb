@@ -1,4 +1,10 @@
-version=3
+# https://salsa.debian.org/snippets/96
+# uscan(1) configuration file.
+version=4
 
-https://launchpad.net/glmark2/+download/ \
- .*/\+download/glmark2-([\d\.]+)\.tar\.(?:gz|bz2|xz)
+opts="\
+pgpmode=none,\
+mode=git,gitmode=shallow,date=%Y%m%d,pretty=2017.07+git%cd.%h,\
+repack,compression=xz,repacksuffix=+dfsg,\
+" https://github.com/glmark2/glmark2.git \
+  heads/master

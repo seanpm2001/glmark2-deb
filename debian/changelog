@@ -1,5 +1,5 @@
-glmark2 (2012.12-1) UNRELEASED; urgency=low
+glmark2 (2017.07+git20191225.72dabc5-1) UNRELEASED; urgency=low
 
   * Initial release (Closes: #695849).
 
- -- Dmitry Smirnov <onlyjob@member.fsf.org>  Thu, 13 Dec 2012 23:31:56 +1100
+ -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 13 Dec 2012 23:31:56 +1100
