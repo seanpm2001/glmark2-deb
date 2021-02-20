@@ -1,5 +1,5 @@
 glmark2 (2021.02-1) unstable; urgency=low
 
-  * Initial release (Closes: #695849).
+  * Initial release. (Closes: #695849)
 
- -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 13 Dec 2012 23:31:56 +1100
+ -- Marius Vlad <marius.vlad@collabora.com>  Sat, 20 Feb 2021 22:52:26 +0200

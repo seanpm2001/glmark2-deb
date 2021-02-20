@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Standards-Version: 4.4.1
 Maintainer: Debian Games Team <pkg-games-devel@lists.alioth.debian.org>
-Uploaders: Dmitry Smirnov <onlyjob@debian.org>
+Uploaders: Marius Vlad <marius.vlad@collabora.com>
 Build-Depends: debhelper-compat (= 12)
               ,libgl1-mesa-dev
               ,libgles2-mesa-dev
