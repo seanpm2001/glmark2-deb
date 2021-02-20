@@ -26,6 +26,7 @@
 #include <vector>
 #include <wayland-client.h>
 #include <wayland-egl.h>
+#include <wayland-cursor.h>
 #include "xdg-shell-client-protocol.h"
 
 #include "native-state.h"
@@ -52,6 +53,9 @@ private:
     static const struct xdg_surface_listener xdg_surface_listener_;
     static const struct xdg_toplevel_listener xdg_toplevel_listener_;
     static const struct wl_output_listener output_listener_;
+    static const struct wl_seat_listener seat_listener_;
+    static const struct wl_pointer_listener pointer_listener_;
+    static const struct wl_keyboard_listener keyboard_listener_;
 
     static void
     registry_handle_global(void *data, struct wl_registry *registry,
@@ -92,6 +96,40 @@ private:
     xdg_surface_handle_configure(void *data, struct xdg_surface *xdg_surface,
                                  uint32_t serial);
 
+    static void seat_handle_capabilities(void *data,
+                                         struct wl_seat *seat, uint32_t caps);
+
+    static void pointer_handle_enter(void *data, struct wl_pointer *pointer,
+                                     uint32_t serial, struct wl_surface *surface,
+                                     wl_fixed_t sx, wl_fixed_t sy);
+
+    static void pointer_handle_leave(void *data, struct wl_pointer *pointer,
+                                     uint32_t serial, struct wl_surface *surface);
+
+    static void pointer_handle_motion(void *data, struct wl_pointer *pointer,
+                                      uint32_t time, wl_fixed_t sx, wl_fixed_t sy);
+
+    static void pointer_handle_button(void *data, struct wl_pointer *wl_pointer,
+                                      uint32_t serial, uint32_t time,
+                                      uint32_t button, uint32_t state);
+
+    static void pointer_handle_axis(void *data, struct wl_pointer *wl_pointer,
+                                    uint32_t time, uint32_t axis, wl_fixed_t value);
+
+    static void keyboard_handle_keymap(void *data, struct wl_keyboard *keyboard,
+                                       uint32_t format, int fd, uint32_t size);
+    static void keyboard_handle_enter(void *data, struct wl_keyboard *keyboard,
+                                      uint32_t serial, struct wl_surface *surface,
+                                      struct wl_array *keys);
+    static void keyboard_handle_leave(void *data, struct wl_keyboard *keyboard,
+                                      uint32_t serial, struct wl_surface *surface);
+    static void keyboard_handle_key(void *data, struct wl_keyboard *keyboard,
+                                    uint32_t serial, uint32_t time, uint32_t key,
+                                    uint32_t state);
+    static void keyboard_handle_modifiers(void *data, struct wl_keyboard *keyboard,
+                                          uint32_t serial, uint32_t mods_depressed,
+                                          uint32_t mods_latched, uint32_t mods_locked,
+                                          uint32_t group);
     struct my_output {
         wl_output *output;
         int32_t width, height;
@@ -101,10 +139,20 @@ private:
 
     typedef std::vector<struct my_output *> OutputsVector;
 
+    struct my_cursor {
+        wl_cursor_theme *cursor_theme;
+        wl_cursor *default_cursor;
+        wl_surface *cursor_surface;
+    } *cursor_;
+
     struct my_display {
         wl_display *display;
         wl_registry *registry;
         wl_compositor *compositor;
+        wl_shm *shm;
+        wl_seat *seat;
+        wl_pointer *pointer;
+        wl_keyboard *keyboard;
         struct xdg_wm_base *xdg_wm_base;
         OutputsVector outputs;
     } *display_;

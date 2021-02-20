@@ -103,7 +103,7 @@ CanvasGeneric::update()
     Options::FrameEnd m = Options::frame_end;
 
     if (m == Options::FrameEndDefault) {
-        if (offscreen_)
+        if (offscreen_ || Options::validate)
             m = Options::FrameEndFinish;
         else
             m = Options::FrameEndSwap;
@@ -194,7 +194,8 @@ CanvasGeneric::fbo()
 bool
 CanvasGeneric::supports_gl2()
 {
-    std::string gl_version_str(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+    const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    std::string gl_version_str(version ? version : "");
     int gl_major(0);
 
     size_t point_pos(gl_version_str.find('.'));
@@ -249,6 +250,7 @@ CanvasGeneric::resize_no_viewport(int width, int height)
     }
 
     native_window_ = native_state_.window(cur_properties);
+    window_initialized_ = true;
 
     width_ = cur_properties.width;
     height_ = cur_properties.height;
@@ -274,6 +276,12 @@ CanvasGeneric::resize_no_viewport(int width, int height)
 bool
 CanvasGeneric::do_make_current()
 {
+    if (!window_initialized_) {
+        Log::error("glwindow has never been initialized, check native-state code\n"
+                   "it should not return a valid window until create_window() is called\n");
+        return false;
+    }
+
     gl_state_.init_surface(native_window_);
 
     if (!gl_state_.valid()) {
