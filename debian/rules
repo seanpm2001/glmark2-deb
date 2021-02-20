@@ -7,18 +7,17 @@
 	dh $@
 
 override_dh_clean:
-	dh_clean */*.pyc */*/*.pyc .lock-waf*
-	$(RM) -r build
+	$(RM) -r _builddir
+	dh_clean
 
 override_dh_auto_configure:
-	./waf configure -v --with-flavors=x11-gl,x11-glesv2 --prefix=/usr
+	meson -Dflavors=x11-glesv2,x11-gl -Dprefix=/usr _builddir
 
 override_dh_auto_build:
-	./waf build -v
+	ninja -C _builddir
 
-override_dh_install:
-	./waf --destdir=$(CURDIR)/debian/tmp install
-	dh_install
+execute_before_dh_install:
+	DESTDIR=$(CURDIR)/debian/tmp ninja -C _builddir install
 
 override_dh_installchangelogs:
 	dh_installchangelogs NEWS

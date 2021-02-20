@@ -11,6 +11,7 @@ Build-Depends: debhelper-compat (= 12)
               ,libpng-dev
               ,pkg-config
               ,python3
+	      ,meson
 Homepage: https://github.com/glmark2/glmark2
 Vcs-Git: https://salsa.debian.org/games-team/glmark2.git
 Vcs-Browser: https://salsa.debian.org/games-team/glmark2
