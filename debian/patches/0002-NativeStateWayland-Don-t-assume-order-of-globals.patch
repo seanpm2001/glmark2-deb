@@ -1,0 +1,112 @@
+From bd2c4ca8360a78672b3052fda267b74be46dbbb6 Mon Sep 17 00:00:00 2001
+From: Alexandros Frantzis <alexandros.frantzis@collabora.com>
+Date: Thu, 18 Feb 2021 23:51:15 +0200
+Subject: [PATCH 2/2] NativeStateWayland: Don't assume order of globals
+
+Don't assume that wl_compositor is advertised before wl_shm. Wait until
+all globals have been sent before creating the cursor, since that
+operation requires both wl_compositor and wl_shm.
+
+Fixes #147
+---
+ src/native-state-wayland.cpp | 59 +++++++++++++++++++++---------------
+ src/native-state-wayland.h   |  2 ++
+ 2 files changed, 36 insertions(+), 25 deletions(-)
+
+diff --git a/src/native-state-wayland.cpp b/src/native-state-wayland.cpp
+index 109e8e9..c0fbfad 100644
+--- a/src/native-state-wayland.cpp
++++ b/src/native-state-wayland.cpp
+@@ -162,31 +162,6 @@ NativeStateWayland::registry_handle_global(void *data, struct wl_registry *regis
+         that->display_->shm =
+             static_cast<struct wl_shm *>(
+                 wl_registry_bind(registry, id, &wl_shm_interface, 1));
+-
+-        struct my_cursor *my_cursor = new struct my_cursor();
+-        my_cursor->cursor_surface =
+-             wl_compositor_create_surface(that->display_->compositor);
+-        my_cursor->cursor_theme = wl_cursor_theme_load(NULL, 32, that->display_->shm);
+-
+-        if (!my_cursor->cursor_theme) {
+-            Log::error("unable to load default theme\n");
+-            wl_surface_destroy(my_cursor->cursor_surface);
+-            delete my_cursor;
+-            return;
+-        }
+-
+-        my_cursor->default_cursor =
+-            wl_cursor_theme_get_cursor(my_cursor->cursor_theme, "left_ptr");
+-
+-        if (!my_cursor->default_cursor) {
+-            wl_surface_destroy(my_cursor->cursor_surface);
+-            // assume above cursor_theme was set
+-            wl_cursor_theme_destroy(my_cursor->cursor_theme);
+-            delete my_cursor;
+-            return;
+-        }
+-
+-        that->cursor_ = my_cursor;
+     }
+ }
+ 
+@@ -336,6 +311,8 @@ NativeStateWayland::init_display()
+ 
+     wl_display_roundtrip(display_->display);
+ 
++    setup_cursor();
++
+     return true;
+ }
+ 
+@@ -566,3 +543,35 @@ NativeStateWayland::keyboard_handle_modifiers(void *data, struct wl_keyboard *ke
+                                               uint32_t group)
+ {
+ }
++
++void
++NativeStateWayland::setup_cursor()
++{
++    if (!display_->shm)
++        return;
++
++    struct my_cursor *my_cursor = new struct my_cursor();
++    my_cursor->cursor_surface =
++         wl_compositor_create_surface(display_->compositor);
++    my_cursor->cursor_theme = wl_cursor_theme_load(NULL, 32, display_->shm);
++
++    if (!my_cursor->cursor_theme) {
++        Log::error("unable to load default theme\n");
++        wl_surface_destroy(my_cursor->cursor_surface);
++        delete my_cursor;
++        return;
++    }
++
++    my_cursor->default_cursor =
++        wl_cursor_theme_get_cursor(my_cursor->cursor_theme, "left_ptr");
++
++    if (!my_cursor->default_cursor) {
++        wl_surface_destroy(my_cursor->cursor_surface);
++        // assume above cursor_theme was set
++        wl_cursor_theme_destroy(my_cursor->cursor_theme);
++        delete my_cursor;
++        return;
++    }
++
++    cursor_ = my_cursor;
++}
+diff --git a/src/native-state-wayland.h b/src/native-state-wayland.h
+index 673e821..d208565 100644
+--- a/src/native-state-wayland.h
++++ b/src/native-state-wayland.h
+@@ -130,6 +130,8 @@ private:
+                                           uint32_t serial, uint32_t mods_depressed,
+                                           uint32_t mods_latched, uint32_t mods_locked,
+                                           uint32_t group);
++    void setup_cursor();
++
+     struct my_output {
+         wl_output *output;
+         int32_t width, height;
+-- 
+2.25.0
+

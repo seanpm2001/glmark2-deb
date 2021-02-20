@@ -1,1 +1,3 @@
 man.patch
+0002-NativeStateWayland-Don-t-assume-order-of-globals.patch
+0001-GLStateEGL-Avoid-creating-two-EGLDisplay-instances.patch
