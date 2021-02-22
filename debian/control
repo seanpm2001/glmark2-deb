@@ -33,6 +33,22 @@ Description: OpenGL 2.0 benchmark suite
  .
  This package is intended only for the X11 platform. GLESv2 version.
 
+Package: glmark2-x11
+Architecture: any
+Depends: glmark2-data (= ${source:Version}),
+         libx11-6,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: OpenGL 2.0 benchmark suite
+ glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+ .
+ This package is intended only for the X11 platform. GL version.
+
 Package: glmark2-es2-wayland
 Architecture: any
 Depends: glmark2-data (= ${source:Version}),
@@ -50,6 +66,23 @@ Description: OpenGL 2.0 benchmark suite
  .
  This package intended only for the wayland platform. GLESv2 version.
 
+Package: glmark2-wayland
+Architecture: any
+Depends: glmark2-data (= ${source:Version}),
+         libwayland-client0,
+         libwayland-cursor0,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: OpenGL 2.0 benchmark suite
+ glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+ .
+ This package intended only for the wayland platform. GL version.
+
 Package: glmark2-es2-drm
 Architecture: any
 Depends: glmark2-data (= ${source:Version}),
@@ -65,6 +98,22 @@ Description: OpenGL 2.0 benchmark suite
  of options.
  .
  This package is intended only for the DRM stand-alone back-end. GLESv2 version.
+
+Package: glmark2-drm
+Architecture: any
+Depends: glmark2-data (= ${source:Version}),
+         libdrm2,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: OpenGL 2.0 benchmark suite
+ glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
+ the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
+ glmark2 offers a suite of scenes that can be used to measure many
+ aspects of OpenGL (ES) 2.0 performance.
+ The way in which each scene is rendered is configurable through a set
+ of options.
+ .
+ This package is intended only for the DRM stand-alone back-end. GL version.
 
 Package: glmark2-data
 Architecture: all

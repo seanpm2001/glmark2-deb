@@ -11,7 +11,7 @@ override_dh_clean:
 	dh_clean
 
 override_dh_auto_configure:
-	meson -Dflavors=x11-glesv2,wayland-glesv2,drm-glesv2 -Dprefix=/usr _builddir
+	meson -Dflavors=x11-glesv2,x11-gl,wayland-glesv2,wayland-gl,drm-glesv2,drm-gl -Dprefix=/usr _builddir
 
 override_dh_auto_build:
 	ninja -C _builddir
