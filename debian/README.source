@@ -1,18 +1,10 @@
 Notes regarding bundled libraries
 ---------------------------------
 
-src/libjpeg-turbo   : not used
-src/libpng          : not used
 src/libmatrix       : private
 
+GLESv2 vs GL:
+-------------
 
-Known runtime problems
-----------------------
-
-glmark2 crashes on "terrain" test:
-
-    [terrain] <default>: FPS: 42 FrameTime: 23.810 ms
-    Error: DepthRenderState::setup: glCheckFramebufferStatus failed (0x8cdb)
-    Error: Failed to set up the render target for the depth pass
-    [shadow] <default>: Set up failed
-    Segmentation fault
+We build both GL and GLESv2 version. The *es2* are ones that
+contains the GLESv2 one.
