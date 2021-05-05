@@ -1,6 +1,10 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: glmark2
 Source: https://github.com/glmark2/glmark2
+Files-Excluded:
+ src/libjpeg-turbo/*
+ src/libpng/*
+ src/zlib/*
 
 Files: *
 Copyright: 1993      Silicon Graphics, Inc.
