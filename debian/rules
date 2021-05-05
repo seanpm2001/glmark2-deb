@@ -6,18 +6,8 @@
 %:
 	dh $@
 
-override_dh_clean:
-	$(RM) -r _builddir
-	dh_clean
-
 override_dh_auto_configure:
-	meson -Dflavors=x11-glesv2,x11-gl,wayland-glesv2,wayland-gl,drm-glesv2,drm-gl -Dprefix=/usr _builddir
-
-override_dh_auto_build:
-	ninja -C _builddir
-
-execute_before_dh_install:
-	DESTDIR=$(CURDIR)/debian/tmp ninja -C _builddir install
+	dh_auto_configure -- -Dflavors=x11-glesv2,x11-gl,wayland-glesv2,wayland-gl,drm-glesv2,drm-gl
 
 override_dh_installchangelogs:
 	dh_installchangelogs NEWS
