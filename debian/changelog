@@ -1,4 +1,4 @@
-glmark2 (2021.02-1) unstable; urgency=low
+glmark2 (2021.02+ds-1) unstable; urgency=low
 
   * Initial release. (Closes: #695849)
     Includes 2 patches from upstream to fix two issues, one related to wayland
