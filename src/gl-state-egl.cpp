@@ -317,11 +317,6 @@ GLStateEGL::init_display(void* native_display, GLVisualConfig& visual_config)
         return false;
     }
 
-    if (gladLoadEGLUserPtr(EGL_NO_DISPLAY, load_egl_func, &egl_lib_) == 0) {
-        Log::error("Loading EGL entry points failed\n");
-        return false;
-    }
-
     native_display_ = reinterpret_cast<EGLNativeDisplayType>(native_display);
     requested_visual_config_ = visual_config;
 
@@ -345,10 +340,22 @@ GLStateEGL::init_gl_extensions()
         return false;
     }
 
-    if (GLExtensions::support("GL_OES_mapbuffer")) {
-        GLExtensions::MapBuffer = glMapBufferOES;
-        GLExtensions::UnmapBuffer = glUnmapBufferOES;
-    }
+    GLExtensions::MapBuffer = glMapBufferOES;
+    GLExtensions::UnmapBuffer = glUnmapBufferOES;
+
+    GLExtensions::GenFramebuffers = glGenFramebuffers;
+    GLExtensions::DeleteFramebuffers = glDeleteFramebuffers;
+    GLExtensions::BindFramebuffer = glBindFramebuffer;
+    GLExtensions::FramebufferTexture2D = glFramebufferTexture2D;
+    GLExtensions::FramebufferRenderbuffer = glFramebufferRenderbuffer;
+    GLExtensions::CheckFramebufferStatus = glCheckFramebufferStatus;
+
+    GLExtensions::GenRenderbuffers = glGenRenderbuffers;
+    GLExtensions::DeleteRenderbuffers = glDeleteRenderbuffers;
+    GLExtensions::BindRenderbuffer = glBindRenderbuffer;
+    GLExtensions::RenderbufferStorage = glRenderbufferStorage;
+
+    GLExtensions::GenerateMipmap = glGenerateMipmap;
 #elif GLMARK2_USE_GL
     if (!gladLoadGLUserPtr(load_proc, this)) {
         Log::error("Loading GL entry points failed.");
@@ -356,6 +363,20 @@ GLStateEGL::init_gl_extensions()
     }
     GLExtensions::MapBuffer = glMapBuffer;
     GLExtensions::UnmapBuffer = glUnmapBuffer;
+
+    GLExtensions::GenFramebuffers = glGenFramebuffersEXT;
+    GLExtensions::DeleteFramebuffers = glDeleteFramebuffersEXT;
+    GLExtensions::BindFramebuffer = glBindFramebufferEXT;
+    GLExtensions::FramebufferTexture2D = glFramebufferTexture2DEXT;
+    GLExtensions::FramebufferRenderbuffer = glFramebufferRenderbufferEXT;
+    GLExtensions::CheckFramebufferStatus = glCheckFramebufferStatusEXT;
+
+    GLExtensions::GenRenderbuffers = glGenRenderbuffersEXT;
+    GLExtensions::DeleteRenderbuffers = glDeleteRenderbuffersEXT;
+    GLExtensions::BindRenderbuffer = glBindRenderbufferEXT;
+    GLExtensions::RenderbufferStorage = glRenderbufferStorageEXT;
+
+    GLExtensions::GenerateMipmap = glGenerateMipmapEXT;
 #endif
     return true;
 }
@@ -375,7 +396,7 @@ GLStateEGL::valid()
     if (!gotValidContext())
         return false;
 
-    if (egl_context_ == eglGetCurrentContext())
+    if (eglGetCurrentContext && egl_context_ == eglGetCurrentContext())
         return true;
 
     if (!eglMakeCurrent(egl_display_, egl_surface_, egl_surface_, egl_context_)) {
@@ -383,7 +404,7 @@ GLStateEGL::valid()
         return false;
     }
 
-    if (!eglSwapInterval(egl_display_, 0)) {
+    if (!eglSwapInterval || !eglSwapInterval(egl_display_, 0)) {
         Log::info("** Failed to set swap interval. Results may be bounded above by refresh rate.\n");
     }
 
@@ -470,19 +491,37 @@ GLStateEGL::gotValidDisplay()
     if (egl_display_)
         return true;
 
+    /* Until we initialize glad EGL, load and use our own function pointers. */
+    PFNEGLQUERYSTRINGPROC egl_query_string =
+        reinterpret_cast<PFNEGLQUERYSTRINGPROC>(egl_lib_.load("eglQueryString"));
+    PFNEGLGETPROCADDRESSPROC egl_get_proc_address =
+        reinterpret_cast<PFNEGLGETPROCADDRESSPROC>(egl_lib_.load("eglGetProcAddress"));
+    PFNEGLGETERRORPROC egl_get_error =
+        reinterpret_cast<PFNEGLGETERRORPROC>(egl_lib_.load("eglGetError"));
+    PFNEGLGETDISPLAYPROC egl_get_display =
+        reinterpret_cast<PFNEGLGETDISPLAYPROC>(egl_lib_.load("eglGetDisplay"));
+    PFNEGLINITIALIZEPROC egl_initialize =
+        reinterpret_cast<PFNEGLINITIALIZEPROC>(egl_lib_.load("eglInitialize"));
+
+    if (!egl_query_string || !egl_get_proc_address || !egl_get_error ||
+        !egl_get_display || !egl_initialize)
+    {
+        return false;
+    }
+
     char const * __restrict const supported_extensions =
-        eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
+        egl_query_string(EGL_NO_DISPLAY, EGL_EXTENSIONS);
 
     if (GLMARK2_NATIVE_EGL_DISPLAY_ENUM != 0 && supported_extensions
         && strstr(supported_extensions, "EGL_EXT_platform_base"))
     {
         Log::debug("Using eglGetPlatformDisplayEXT()\n");
-        PFNEGLGETPLATFORMDISPLAYEXTPROC get_platform_display =
+        PFNEGLGETPLATFORMDISPLAYEXTPROC egl_get_platform_display =
             reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(
-                eglGetProcAddress("eglGetPlatformDisplayEXT"));
+                egl_get_proc_address("eglGetPlatformDisplayEXT"));
 
-        if (get_platform_display != nullptr) {
-            egl_display_ = get_platform_display(
+        if (egl_get_platform_display != nullptr) {
+            egl_display_ = egl_get_platform_display(
                 GLMARK2_NATIVE_EGL_DISPLAY_ENUM,
                 reinterpret_cast<void*>(native_display_),
                 nullptr);
@@ -490,7 +529,7 @@ GLStateEGL::gotValidDisplay()
 
         if (!egl_display_) {
             Log::debug("eglGetPlatformDisplayEXT() failed with error: 0x%x\n",
-                       eglGetError());
+                       egl_get_error());
         }
     }
     else
@@ -501,18 +540,18 @@ GLStateEGL::gotValidDisplay()
     /* Just in case get_platform_display failed... */
     if (!egl_display_) {
         Log::debug("Falling back to eglGetDisplay()\n");
-        egl_display_ = eglGetDisplay(native_display_);
+        egl_display_ = egl_get_display(native_display_);
     }
 
     if (!egl_display_) {
-        Log::error("eglGetDisplay() failed with error: 0x%x\n", eglGetError());
+        Log::error("eglGetDisplay() failed with error: 0x%x\n", egl_get_error());
         return false;
     }
 
     int egl_major(-1);
     int egl_minor(-1);
-    if (!eglInitialize(egl_display_, &egl_major, &egl_minor)) {
-        Log::error("eglInitialize() failed with error: 0x%x\n", eglGetError());
+    if (!egl_initialize(egl_display_, &egl_major, &egl_minor)) {
+        Log::error("eglInitialize() failed with error: 0x%x\n", egl_get_error());
         egl_display_ = 0;
         return false;
     }
@@ -522,6 +561,8 @@ GLStateEGL::gotValidDisplay()
         Log::error("Loading EGL entry points failed\n");
         return false;
     }
+
+    /* From this point on we can use the normal EGL function calls. */
 
 #if GLMARK2_USE_GLESv2
     EGLenum apiType(EGL_OPENGL_ES_API);
@@ -533,9 +574,15 @@ GLStateEGL::gotValidDisplay()
 #elif GLMARK2_USE_GL
     EGLenum apiType(EGL_OPENGL_API);
     std::initializer_list<const char *> libNames = { "libGL.so", "libGL.so.1" };
+    if (!GLAD_EGL_VERSION_1_4) {
+        Log::error("EGL version %d.%d does not support the OpenGL API\n",
+                   egl_major, egl_minor);
+        return false;
+    }
 #endif
-    if (!eglBindAPI(apiType)) {
-        Log::error("Failed to bind api EGL_OPENGL_ES_API\n");
+
+    if (eglBindAPI && !eglBindAPI(apiType)) {
+        Log::error("Failed to bind api\n");
         return false;
     }
 
