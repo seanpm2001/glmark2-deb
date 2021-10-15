@@ -4,7 +4,7 @@ version=4
 
 opts="\
 pgpmode=none,\
-mode=git,gitmode=shallow,date=%Y%m%d,pretty=2021.02+git%cd.%h,\
-repack,compression=xz,repacksuffix=+ds,\
+mode=git,gitmode=shallow,date=%Y.%m,pretty=%cd~git.%h,\
+repack,compression=xz,\
 " https://github.com/glmark2/glmark2.git \
   heads/master
