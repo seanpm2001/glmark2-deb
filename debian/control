@@ -28,6 +28,8 @@ Depends: glmark2-data (= ${source:Version}),
          libx11-6,
          ${misc:Depends},
          ${shlibs:Depends},
+Provides: glmark2-es2
+Replaces: glmark2-es2 (<< 2021.02+ds)
 Description: OpenGL 2.0 benchmark suite
  glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
  the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
@@ -44,6 +46,8 @@ Depends: glmark2-data (= ${source:Version}),
          libx11-6,
          ${misc:Depends},
          ${shlibs:Depends},
+Provides: glmark2
+Replaces: glmark2 (<< 2021.02+ds)
 Description: OpenGL 2.0 benchmark suite
  glmark2 is a benchmark for OpenGL 2.0. It uses only the subset of
  the OpenGL 2.0 API that is compatible with OpenGL ES 2.0.
