@@ -15,7 +15,7 @@ Build-Depends: debhelper-compat (= 12),
                libwayland-dev,
                libxcb1-dev,
                meson,
-               pkg-config,
+               pkgconf | pkg-config,
                python3,
                wayland-protocols,
 Homepage: https://github.com/glmark2/glmark2
