@@ -1,3 +1,13 @@
+glmark2 (2021.10~git.e359bb0-2) unstable; urgency=medium
+
+  * Add Provides/Replaces to ease transition from Ubuntu packages.
+  * Prefer pkgconf to pkg-config.
+  * Bump debhelper from old 12 to 13.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit.
+  * Update standards version to 4.6.0, no changes needed.
+
+ -- Andrej Shadura <andrew.shadura@collabora.co.uk>  Thu, 18 Nov 2021 11:13:03 +0100
+
 glmark2 (2021.10~git.e359bb0-1) unstable; urgency=medium
 
   * New upstream snapshot.
