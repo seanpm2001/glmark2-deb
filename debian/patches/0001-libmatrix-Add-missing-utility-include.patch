@@ -1,0 +1,29 @@
+From cb467a6b0b36d43821490dc4cf8158f3ef14118c Mon Sep 17 00:00:00 2001
+From: Leonardo Held <leonardo.held@toradex.com>
+Date: Tue, 23 Apr 2024 16:16:17 -0300
+Subject: [PATCH] libmatrix: Add missing <utility> include
+
+Fixes compilation with GCC 12.
+
+Copy of glmark2@d1ca3f53c96dc8a4048b17dc16147a8fac782d4a
+
+Signed-off-by: Leonardo Held <leonardo.held@toradex.com>
+---
+ src/libmatrix/program.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/libmatrix/program.h b/src/libmatrix/program.h
+index f95b470..1c9de08 100644
+--- a/src/libmatrix/program.h
++++ b/src/libmatrix/program.h
+@@ -15,6 +15,7 @@
+ #include <string>
+ #include <vector>
+ #include <map>
++#include <utility>
+ #include "mat.h"
+ 
+ // Simple shader container.  Abstracts all of the OpenGL bits, but leaves
+-- 
+2.39.3 (Apple Git-145)
+
