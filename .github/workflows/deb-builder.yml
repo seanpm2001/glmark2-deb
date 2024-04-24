@@ -83,3 +83,44 @@ jobs:
             Pin: origin feeds.toradex.com
             Pin-Priority: 900
 
+      - name: Upload Workflow Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: glmark2-debian-bookworm-arm64
+          path: debian/artifacts/*
+          retention-days: 90
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build-debs
+    env:
+      artifacts-dir: artifacts
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update base container
+        run: sudo apt-get -y update
+
+      - name: Download Artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p ${{ github.workspace }}/${{ env.artifacts-dir }}
+          cd ${{ github.workspace }}/${{ env.artifacts-dir }}
+          gh run download ${{ github.run_id }}
+
+      - name: Zip Folders
+        run: |
+          cd ${{ github.workspace }}/${{ env.artifacts-dir }}
+          for folder in glmark* do
+            zip -r "${folder}.zip" "$folder"
+          done
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ${{ github.workspace }}/${{ env.artifacts-dir }}/*.zip
